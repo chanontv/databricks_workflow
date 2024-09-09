@@ -1,6 +1,5 @@
 # Databricks notebook source
 
-# on Github
 # Get the absolute path of the CSV file
 file_path = "gs://databricks_chanont/raw/book_depository/dataset.csv"
 
