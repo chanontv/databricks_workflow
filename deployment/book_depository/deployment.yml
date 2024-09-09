@@ -14,7 +14,7 @@ environments:
         tasks:
           - task_key: "data_processing_to_gcs"
             notebook_task:
-              notebook_path: "python/book_depository"
+              notebook_path: "python/clean_book"
               source: GIT
             existing_cluster_id: 0906-174906-b7p30w4
             timeout_seconds: 0
