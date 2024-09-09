@@ -1,0 +1,50 @@
+name: chanont-development-databricks-workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  chanont-databricks-deployment:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      
+
+    name: Dev Databricks Workflow Deployment
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+
+      - name: Install dbx
+        run: |
+          pip install dbx dbx[gcp] --upgrade 
+
+      - name: Install typing_extensions
+        run: |
+          pip install typing_extensions==4.5.0
+
+      - name: Test dbx CLI
+        run: |
+          dbx --version
+
+      - name: Deploy Databricks Workflows for chanont-databricks
+        run: |
+          dbx deploy --deployment-file=deployment/book_depository/deployment.yml --environment=prod
+
+      - name: Launch job
+        run: |
+          dbx launch --job=NB_processing_to_gcs --environment=prod

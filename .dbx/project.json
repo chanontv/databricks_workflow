@@ -1,0 +1,14 @@
+{
+    "environments": {
+      "dev": {
+        "profile": "chanont_databricks",
+        "workspace_dir": "/Shared/project_folder",
+        "artifact_location": "dbfs:/databricks/artifacts/dev"
+      },
+      "prod": {
+        "profile": "chanont_databricks",
+        "workspace_dir": "/Shared/project_folder_prod",
+        "artifact_location": "dbfs:/databricks/artifacts/prod"
+      }
+    }
+  }

@@ -1,0 +1,32 @@
+build:
+  no_build: true
+
+environments:
+  prod:
+    workflows:
+      - name: "NB_processing_to_gcs"
+        creator_user_name: chanont.vc@gmail.com
+        run_as_user_name: chanont.vc@gmail.com
+        run_as_owner: true
+        settings:
+          name: "data_processing_to_gcs"
+          max_concurrent_runs: 1
+        tasks:
+          - task_key: "data_processing_to_gcs"
+            notebook_task:
+              notebook_path: "python/book_depository"
+              source: GIT
+            existing_cluster_id: 0906-174906-b7p30w4
+            timeout_seconds: 0
+        git_source:
+            git_url: "https://github.com/chanontv/databricks_gcp.git"
+            git_provider: gitHub
+            git_branch: main
+        format: MULTI_TASK
+        queue:
+            enabled: true
+        
+after_deploy:
+  run_job: true
+  job_name: "data_processing_to_gcs"
+  environment: prod
