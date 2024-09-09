@@ -19,7 +19,7 @@ environments:
             existing_cluster_id: 0906-174906-b7p30w4
             timeout_seconds: 0
         git_source:
-            git_url: "https://github.com/chanontv/databricks_gcp.git"
+            git_url: "https://github.com/chanontv/databricks_workflow.git"
             git_provider: gitHub
             git_branch: main
         format: MULTI_TASK
