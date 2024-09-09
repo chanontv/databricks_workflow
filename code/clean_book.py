@@ -1,11 +1,16 @@
-from pyspark.sql import functions as f
-from pyspark.sql.functions import to_timestamp
-from pyspark.sql.functions import col, format_number, regexp_replace, when, split, explode , avg
+# Databricks notebook source
 
-# Get dataset from GCS
+# on Github
+# Get the absolute path of the CSV file
 file_path = "gs://databricks_chanont/raw/book_depository/dataset.csv"
 
 df = spark.read.csv(file_path, header=True, inferSchema=True)
+
+# COMMAND ----------
+
+from pyspark.sql.functions import col
+from pyspark.sql import functions as f
+from pyspark.sql.functions import to_timestamp
 
 # Drop unused column
 df_clean = df.drop("categories", "description", "edition","edition-statement","for-ages","illustrations-note","image-checksum","image-path","image-url","imprint","index-date","isbn10","isbn13","lang","publication-place","rating-count","title","url","weight")
@@ -22,6 +27,10 @@ df_clean = df_clean.withColumn("publication-date",
 
 # Drop missing values
 df_clean = df_clean.dropna(subset=["authors", "bestsellers-rank","dimension-x","dimension-y","dimension-z","format"])
+
+# COMMAND ----------
+
+from pyspark.sql.functions import col, format_number, regexp_replace
 
 # Clean thd id column
 
@@ -45,10 +54,18 @@ df_clean = df_clean.filter(df_clean["bestsellers-rank"].rlike("^[0-9]{1,10}"))
 #df_incorrect_userid = df_clean.subtract(df_correct_rank)
 #df_incorrect_userid.show(10)
 
+# COMMAND ----------
+
+from pyspark.sql.functions import when
+
 # Clean thd publication-date column
 
 # Replace null values ​​with 1000-01-01
 df_clean = df_clean.withColumn("publication-date", when(col("publication-date").isNull(), '1000-01-01').otherwise(col("publication-date")))
+
+# COMMAND ----------
+
+from pyspark.sql.functions import avg
 
 # Clean thd rating-avg column
 
@@ -61,15 +78,24 @@ average_rating = df_clean.select(avg("rating-avg")).collect()[0][0]
 # Replace null values ​​with average_rating
 df_clean = df_clean.withColumn("rating-avg", when(col("rating-avg").isNull(), average_rating).otherwise(col("rating-avg")))
 
+# COMMAND ----------
+
+from pyspark.sql.functions import split, explode
+
 # Clean thd authors column
+
 df_clean_authors = df_clean.withColumn("authors_clean", regexp_replace("authors", "[\\[\\]]", ""))
+
 df_clean_authors_split = df_clean_authors.withColumn("authors_array", split(col("authors_clean"), ", "))
+
 df_exploded_authors = df_clean_authors_split.withColumn("author_exploded", explode(col("authors_array")))
+
 df_clean = df_exploded_authors.drop("authors_clean","authors_array")
 
-# JOIN DATA 
+# COMMAND ----------
 
-# Get data from GCS
+# JOIN DATA #
+
 formats_file_path = "gs://databricks_chanont/raw/book_depository/formats.csv"
 authors_file_path = "gs://databricks_chanont/raw/book_depository/authors.csv"
 
@@ -85,6 +111,8 @@ df_final_joined = df_joined.join(df_author,df_joined["author_exploded"] == df_au
 # Drop duplicate columns
 df_final_joined = df_final_joined.drop("authors_clean","authors_array","format")
 
-# Save & Upload to GCS
+# COMMAND ----------
+
 output_path = "gs://databricks_chanont/base/book_depository.csv"
+
 df_final_joined.coalesce(1).write.mode("overwrite").option("header", "true").option("delimiter", "|").csv(output_path)
