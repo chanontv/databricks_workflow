@@ -11,7 +11,7 @@
    - Designed and implemented a CI/CD pipeline for deployment processes.
    <img src="img/git_actions.jpg" />
    - Automated job scheduling and execution within Databricks. 
-   <img src="img/job.jpg" />
+   <img src="img/jobs.jpg" />
    - Uploaded processed results to Google Cloud Storage (GCS).
    <img src="img/gcs.jpg" />
 
