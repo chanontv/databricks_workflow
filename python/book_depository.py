@@ -16,10 +16,10 @@ df_clean = df.drop("categories", "description", "edition","edition-statement","f
 
 # Convert data type
 #df_clean = df_clean.withColumn("id", col("id").cast("double"))
-df_clean = df_clean.withColumn("dimension-x", col("dimension-x").cast("double"))
-df_clean = df_clean.withColumn("dimension-y", col("dimension-y").cast("double"))
-df_clean = df_clean.withColumn("dimension-z", col("dimension-z").cast("double"))
-df_clean = df_clean.withColumn("rating-avg", col("rating-avg").cast("double"))
+df_clean = df_clean.withColumn("dimension-x", col("dimension-x").cast("float"))
+df_clean = df_clean.withColumn("dimension-y", col("dimension-y").cast("float"))
+df_clean = df_clean.withColumn("dimension-z", col("dimension-z").cast("float"))
+df_clean = df_clean.withColumn("rating-avg", col("rating-avg").cast("float"))
 df_clean = df_clean.withColumn("publication-date",
                         f.to_timestamp(col("publication-date"), 'dd/MM/yyyy HH:mm')
                         )
